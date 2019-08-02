@@ -1,0 +1,132 @@
+#include <Servo.h> //Servo Library
+
+Servo camservo; //Servo name
+
+char t;
+int enA = 5;
+int enB = 6;
+int lf = 9;
+int lr = 10;
+int rf = 11;
+int rr = 12;
+
+int motorSpeed = 200;
+int turn = 50;
+ 
+void setup() {
+pinMode(lf,OUTPUT);   //left motors forward
+pinMode(lr,OUTPUT);   //left motors reverse
+pinMode(rf,OUTPUT);   //right motors forward
+pinMode(rr,OUTPUT);   //right motors reverse
+pinMode(enA, OUTPUT);  
+pinMode(enB, OUTPUT);
+
+camservo.attach(8);  // attach servo signal wire to pin 8
+camservo.write(120);
+
+Serial.begin(9600);
+
+}
+ 
+void loop(){
+/*if(Serial.available()> 0){   // receive number from bluetooth
+  int servoPos = Serial.read(); //save the received number to servopos
+  Serial.println(servoPos); // serial print servopos current number received from bluetooth
+  camservo.write(servoPos); // roate the servo the angle received from the android app
+  }*/
+
+if (Serial.available()){
+  t = Serial.read();
+  Serial.println(t);
+}
+ 
+if(t == 'F'){            //move forward(all motors rotate in forward direction)
+  forward();
+}
+ 
+else if(t == 'B'){      //move reverse (all motors rotate in reverse direction)n
+  reverse();
+}
+ 
+else if(t == 'L'){      //turn right (left side motors rotate in forward direction, right side motors doesn't rotate)
+  left();
+}
+ 
+else if(t == 'R'){      //turn left (right side motors rotate in forward direction, left side motors doesn't rotate)
+  right();
+}
+ 
+else if(t == 'S'){      //STOP (all motors stop)
+  stp();
+}
+
+else if (t == 'A'){
+camservo.write(60);
+}
+
+else if (t == 'C'){
+camservo.write(90);
+}
+
+else if (t == 'D'){
+camservo.write(120);
+}
+
+else if (t == 'E'){
+camservo.write(150);
+}
+
+else if (t == 'G'){
+camservo.write(30);
+}
+
+else if (t == 'I'){
+camservo.write(180);
+}
+}
+
+
+void forward(){
+  analogWrite(enA,motorSpeed);
+  analogWrite(enB,motorSpeed);
+  digitalWrite(lf,HIGH);
+  digitalWrite(lr,LOW);
+  digitalWrite(rf,HIGH);
+  digitalWrite(rr,LOW);
+}
+
+void reverse(){
+  analogWrite(enA,motorSpeed);
+  analogWrite(enB,motorSpeed);
+  digitalWrite(lf,LOW);
+  digitalWrite(lr,HIGH);
+  digitalWrite(rf,LOW);
+  digitalWrite(rr,HIGH);
+}
+
+void left(){
+  analogWrite(enA,motorSpeed-turn);
+  analogWrite(enB,motorSpeed+turn);
+  digitalWrite(lf,LOW);
+  digitalWrite(lr,HIGH);
+  digitalWrite(rf,HIGH);
+  digitalWrite(rr,LOW);
+}
+
+void right(){
+  analogWrite(enA,motorSpeed+turn);
+  analogWrite(enB,motorSpeed-turn);
+  digitalWrite(lf,HIGH);
+  digitalWrite(lr,LOW);
+  digitalWrite(rf,LOW);
+  digitalWrite(rr,HIGH);
+}
+
+void stp(){
+  analogWrite(enA,0);
+  analogWrite(enB,0);
+  digitalWrite(lf,LOW);
+  digitalWrite(lr,LOW);
+  digitalWrite(rf,LOW);
+  digitalWrite(rr,LOW);
+}
